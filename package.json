@@ -1,11 +1,15 @@
 {
   "name": "OnshapeBOMChecker",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "OnShape BOM Checker - Client-side tool to extract part details from OnShape assemblies",
+  "main": "main.js",
   "scripts": {
+    "start": "node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "private": true,
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }

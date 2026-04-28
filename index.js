@@ -1,6 +1,6 @@
 import fs from "fs"
 
-function getIDs(onshapeURL) {
+export function getIDs(onshapeURL) {
     const docIDre = new RegExp("/documents/[a-zA-Z0-9]+/");
     const wvmIDre = new RegExp("/w/[a-zA-Z0-9]+/");
     const elmIDre = new RegExp("/e/[a-zA-Z0-9]+");
@@ -14,14 +14,14 @@ function getIDs(onshapeURL) {
     return res;
 }
 
-async function fetchBOMJSON(onshapeURL) {
+export async function fetchBOMJSON(onshapeURL) {
     const ids = getIDs(onshapeURL);
     const request = `https://cad.onshape.com/api/v15/assemblies/d/${ids.get("docID")}/w/${ids.get("wvmID")}/e/${ids.get("elmID")}/bom?indented=true&multiLevel=true&generateIfAbsent=true&includeItemMicroversions=false&includeTopLevelAssemblyRow=false&thumbnail=false&respectSubassemblyBomBehavior=false`;
     const response = await fetch(request);
     return await response.json();
 }
 
-async function saveBOMJSON(onshapeURL) {
+export async function saveBOMJSON(onshapeURL) {
     const json = await fetchBOMJSON(onshapeURL);
     const name = json.name.replace("BOM : ", "");
     fs.writeFile("res/" + name + '.json', JSON.stringify(json, null, 2), (err) => {
@@ -33,12 +33,12 @@ async function saveBOMJSON(onshapeURL) {
     });
 }
 
-async function getJSONFromName(name) {
+export async function getJSONFromName(name) {
     const rawData = fs.readFileSync("res/" + name + '.json');
     return JSON.parse(rawData.toString());
 }
 
-function BOMJSONtoRowList(json) {
+export function BOMJSONtoRowList(json) {
     const headersMap = new Map();
     const headers = json.headers;
     for (const header of headers) {
@@ -64,9 +64,41 @@ function BOMJSONtoRowList(json) {
     return rowList;
 }
 
-function rowListToMap(rowList) {
+export function rowListToMap(rowList) {
     const res = new Map();
+    const consecutiveIndentLevelRows = [];
+    let currIndentLevel = -1;
+    let indentRows = [];
+    for (const row of rowList) {
+        const indentLevel = row.get("indentLevel");
+        if (currIndentLevel === -1) {
+            currIndentLevel = indentLevel;
+            indentRows.push(row);
+        } else if (currIndentLevel !== indentLevel) {
+            consecutiveIndentLevelRows.push(indentRows);
+            indentRows = [row];
+            currIndentLevel = indentLevel;
+        } else {
+            indentRows.push(row);
+        }
+    }
+    consecutiveIndentLevelRows.push(indentRows);
+    let prevIndentRows = new Map();
+    for (const indentRows of consecutiveIndentLevelRows) {
+        const indentLevel = indentRows[0].get("indentLevel");
+        if (indentLevel === 0) {
+            for (const row of indentRows) {
+                res.set(row.get("Name"), row);
+            }
+        } else {
+            if (prevIndentRows.get(indentLevel - 1).has("children")) {
+                prevIndentRows.get(indentLevel - 1).set("children",
+                    prevIndentRows.get(indentLevel - 1).get("children").concat(indentRows));
+            } else {
+                prevIndentRows.get(indentLevel - 1).set("children", indentRows);
+            }
+        }
+        prevIndentRows.set(indentLevel, indentRows[indentRows.length - 1]);
+    }
+    return res;
 }
-
-// await saveBOMJSON("https://cad.onshape.com/documents/2349b31355d5aff1d49308fd/w/7aaaa05611303a287bccdc6e/e/1bdff1f090eef82a2afdd829")
-rowListToMap(BOMJSONtoRowList(await getJSONFromName("Beta")));
