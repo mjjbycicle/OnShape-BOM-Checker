@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OnShape BOM Checker</title>
-    <style>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>OnShape BOM Checker</title>
+	<style>
         * {
             margin: 0;
             padding: 0;
@@ -268,97 +268,98 @@
             font-size: 12px;
             color: #a0a5b0;
         }
-    </style>
+	</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1 class="header-title">OnShape BOM Checker</h1>
-            <p class="header-subtitle">Extract detailed part information from your assemblies</p>
-        </div>
+	<div class="container">
+		<div class="header">
+			<h1 class="header-title">OnShape BOM Checker</h1>
+			<p class="header-subtitle">Extract detailed part information from your assemblies</p>
+		</div>
 
-        <div class="card">
-            <form id="searchForm" onsubmit="handleSearch(event)">
-                <div class="form-group">
-                    <label for="onshapeURL">OnShape Assembly URL</label>
-                    <input
-                        type="url"
-                        id="onshapeURL"
-                        placeholder="https://cad.onshape.com/documents/..."
-                        required
-                    />
-                </div>
+		<div class="card">
+			<form id="searchForm" onsubmit="handleSearch(event)">
+				<div class="form-group">
+					<label for="onshapeURL">OnShape Assembly URL</label>
+					<input
+							type="url"
+							id="onshapeURL"
+							placeholder="https://cad.onshape.com/documents/..."
+							required
+					/>
+				</div>
 
-                <div class="form-group">
-                    <label for="partName">Part Name</label>
-                    <input
-                        type="text"
-                        id="partName"
-                        placeholder="Enter the part name to search for"
-                        required
-                    />
-                </div>
+				<div class="form-group">
+					<label for="partName">Part Name</label>
+					<input
+							type="text"
+							id="partName"
+							placeholder="Enter the part name to search for"
+							required
+					/>
+				</div>
 
-                <div class="button-group">
-                    <button type="submit" class="btn-search" id="searchBtn">
-                        Search Part
-                    </button>
-                    <button type="button" class="btn-clear" onclick="clearForm()">
-                        Clear
-                    </button>
-                </div>
+				<div class="button-group">
+					<button type="submit" class="btn-search" id="searchBtn">
+						Search Part
+					</button>
+					<button type="button" class="btn-clear" onclick="clearForm()">
+						Clear
+					</button>
+				</div>
 
-                <div class="info-box">
-                    💡 Make sure you have access to the OnShape document and the assembly contains the part you're searching for.
-                </div>
-            </form>
+				<div class="info-box">
+					💡 Make sure you have access to the OnShape document and the assembly contains the part you're
+					searching for.
+				</div>
+			</form>
 
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <div class="loading-text">Fetching part information...</div>
-            </div>
+			<div class="loading" id="loading">
+				<div class="spinner"></div>
+				<div class="loading-text">Fetching part information...</div>
+			</div>
 
-            <div class="error-message" id="errorMessage"></div>
+			<div class="error-message" id="errorMessage"></div>
 
-            <div class="result-container" id="resultContainer">
-                <div class="result-card">
-                    <div class="result-header">
-                        <div class="result-title" id="resultTitle">Part Information</div>
-                    </div>
+			<div class="result-container" id="resultContainer">
+				<div class="result-card">
+					<div class="result-header">
+						<div class="result-title" id="resultTitle">Part Information</div>
+					</div>
 
-                    <div class="result-field">
-                        <div class="result-label">Name</div>
-                        <div class="result-value" id="resultName">-</div>
-                    </div>
+					<div class="result-field">
+						<div class="result-label">Name</div>
+						<div class="result-value" id="resultName">-</div>
+					</div>
 
-                    <div class="result-field">
-                        <div class="result-label">Mass</div>
-                        <div class="result-value" id="resultMass">-</div>
-                    </div>
+					<div class="result-field">
+						<div class="result-label">Mass</div>
+						<div class="result-value" id="resultMass">-</div>
+					</div>
 
-                    <div class="result-field">
-                        <div class="result-label">Revision</div>
-                        <div class="result-value" id="resultRevision">-</div>
-                    </div>
+					<div class="result-field">
+						<div class="result-label">Revision</div>
+						<div class="result-value" id="resultRevision">-</div>
+					</div>
 
-                    <div class="result-field">
-                        <div class="result-label">Description</div>
-                        <div class="result-value" id="resultDescription">-</div>
-                    </div>
+					<div class="result-field">
+						<div class="result-label">Description</div>
+						<div class="result-value" id="resultDescription">-</div>
+					</div>
 
-                    <div class="result-field">
-                        <div class="result-label">Material</div>
-                        <div class="result-value" id="resultMaterial">-</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+					<div class="result-field">
+						<div class="result-label">Material</div>
+						<div class="result-value" id="resultMaterial">-</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-    <script type="module">
-        import { getPart } from './bom-utils.js';
+	<script type="module">
+        import {getPart} from './bom-utils.js';
 
-        window.handleSearch = async function(event) {
+        window.handleSearch = async function (event) {
             event.preventDefault();
 
             const onshapeURL = document.getElementById('onshapeURL').value;
@@ -372,19 +373,13 @@
             document.getElementById('loading').classList.add('show');
             document.getElementById('searchBtn').disabled = true;
 
-            try {
-                // Call the BOM utils function directly
-                const partInfo = await getPart(onshapeURL, partName);
-                displayResults(partInfo);
-            } catch (error) {
-                showError(error.message);
-            } finally {
-                document.getElementById('loading').classList.remove('show');
-                document.getElementById('searchBtn').disabled = false;
-            }
+            const partInfo = await getPart(onshapeURL, partName);
+            displayResults(partInfo);
+            document.getElementById('loading').classList.remove('show');
+            document.getElementById('searchBtn').disabled = false;
         };
 
-        window.displayResults = function(data) {
+        window.displayResults = function (data) {
             document.getElementById('resultTitle').textContent = data.name;
             document.getElementById('resultName').textContent = data.name;
             document.getElementById('resultMass').textContent = data.mass;
@@ -395,19 +390,19 @@
             document.getElementById('resultContainer').classList.add('show');
         };
 
-        window.showError = function(message) {
+        window.showError = function (message) {
             const errorEl = document.getElementById('errorMessage');
             errorEl.textContent = '❌ ' + message;
             errorEl.classList.add('show');
         };
 
-        window.clearForm = function() {
+        window.clearForm = function () {
             document.getElementById('searchForm').reset();
             document.getElementById('errorMessage').classList.remove('show');
             document.getElementById('resultContainer').classList.remove('show');
             document.getElementById('onshapeURL').focus();
         };
-    </script>
+	</script>
 </body>
 </html>
 

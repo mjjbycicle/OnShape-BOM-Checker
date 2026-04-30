@@ -1,20 +1,18 @@
-import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import * as readline from "node:readline/promises";
+import {getPart} from "./bom-utils.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const app = express();
-const PORT = 3000;
-
-// Serve static files
-app.use(express.static(__dirname));
-
-// Start server
-app.listen(PORT, () => {
-    console.log(`OnShape BOM Checker running at http://localhost:${PORT}`);
-    console.log(`Open http://localhost:${PORT} in your browser to use the application.`);
-    console.log(`All logic now runs client-side using bom-utils.js`);
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
 });
 
+let docLink = await rl.question('Onshape document (assembly tab) link:');
+
+let partName = await rl.question('Part name:');
+
+let part = await getPart(docLink, partName);
+console.log(part.name + ":");
+console.log(`mass: ${part.mass}`);
+console.log(`revision: ${part.revision}`);
+console.log(`description: ${part.description}`);
+console.log(`material: ${part.material.id}`)
