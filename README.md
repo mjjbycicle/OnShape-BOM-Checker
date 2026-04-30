@@ -6,4 +6,5 @@ A script to check part properties.
 
 - Run main.js
 - Paste the URL of the desired assembly tab
+- Paste/type the name of the part
 
